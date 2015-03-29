@@ -1,0 +1,67 @@
+/*
+ * Joost Vissers
+ * 17-02-2014
+ * V:0.1
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h> /* extern int errno; */
+#include <fcntl.h>
+#include <unistd.h>
+#define permissions 0600 /* User:Read+Write, Group and Other: Read */
+#define NO_ERROR 0
+
+int main(int argc, char *argv[]){
+
+  int inputFile;
+  int outputFile;
+  char *inFilename = "text.txt";
+  char *outFilename = "test.txt";
+  
+  int readLength;
+  char c;
+/*
+  if( argc < 3 ){
+      printf("Opdracht mist een parameter.");
+      exit(1);
+  }
+  else{
+      inFilename = argv[1];//"text.txt";
+      outFilename = argv[2];//"test.txt";
+  }*/
+  
+ 
+  if((inputFile = open(inFilename,O_RDONLY)) < 0){
+      perror("Fout opgetreden bij inputfile ");
+      exit(1);
+  }  
+
+  if((outputFile = open(outFilename, O_WRONLY|O_CREAT,permissions)) < 0){
+      perror("Fout opgetreden bij outputfile ");
+      exit(1);
+  }
+
+  int derp;
+
+  while((readLength = read(inputFile,&c,1))> 0){
+      if(readLength < 0){
+          //print error enzo
+          perror("Fout opgetreden ");
+          exit(1);
+      }
+      else{
+          c = c ^ 00011111;
+          if((derp = write(outputFile,&c,1)) < 0){
+              perror("Fout opgetreden ");
+              exit(1);
+          }
+      }
+  }
+
+  close(inputFile);
+  close(outputFile);
+
+  return NO_ERROR;
+}
+
